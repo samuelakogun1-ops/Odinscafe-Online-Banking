@@ -37,9 +37,7 @@
             text-transform: uppercase;
             font-size: 11px;
             letter-spacing: 0.1em;
-            transition: 0.4s;
         }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3); }
     </style>
 </head>
 <body class="p-6 md:p-12">
@@ -49,11 +47,11 @@
             <div>
                 <h1 class="text-3xl font-black italic tracking-tighter uppercase">ODIN<span class="text-amber-500">_CORE</span></h1>
                 <div class="flex items-center gap-3 mt-2">
-                    <div id="nodeDot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
-                    <span id="nodeStatus" class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500">System Link: Offline</span>
+                    <div id="nodeDot" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_15px_#22c55e]"></div>
+                    <span id="nodeStatus" class="text-[10px] font-bold uppercase tracking-[0.2em] text-green-500">System Link: Active</span>
                 </div>
             </div>
-            <button onclick="window.location.href='index.html'" class="px-6 py-2 border border-white/20 rounded-full text-[10px] font-bold uppercase text-white hover:bg-white/10 transition-all">Exit Terminal</button>
+            <button onclick="window.location.href='index.html'" class="px-6 py-2 border border-white/20 rounded-full text-[10px] font-bold uppercase text-white">Exit</button>
         </header>
 
         <div class="grid lg:grid-cols-3 gap-10">
@@ -63,7 +61,7 @@
                     <input type="text" id="n" class="matrix-input" placeholder="Client Name" required>
                     <input type="number" id="b" class="matrix-input" placeholder="Balance ($)" required>
                     <input type="text" id="p" class="matrix-input" placeholder="Vault Key" required>
-                    <button type="submit" id="sBtn" class="btn-gold w-full">Execute Provisioning</button>
+                    <button type="submit" id="sBtn" class="btn-gold w-full">Execute</button>
                 </form>
             </div>
 
@@ -96,37 +94,31 @@
         const aid = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
 
         async function init() {
-            try {
-                await signInAnonymously(auth);
-                document.getElementById('nodeDot').className = "w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_15px_#22c55e]";
-                document.getElementById('nodeStatus').innerText = "System Link: Online";
-                document.getElementById('nodeStatus').className = "text-[10px] font-bold uppercase tracking-[0.2em] text-green-500";
-                
-                const col = collection(db, 'artifacts', aid, 'public', 'data', 'users');
-                onSnapshot(col, (s) => {
-                    const l = document.getElementById('pList');
-                    document.getElementById('loader').style.display = 'none';
-                    l.innerHTML = '';
-                    s.forEach((d) => {
-                        const r = d.data();
-                        const tr = document.createElement('tr');
-                        tr.className = "border-b border-white/5";
-                        tr.innerHTML = `
-                            <td class="py-6 font-bold uppercase italic text-sm">${r.name}</td>
-                            <td class="py-6 text-white/40 font-mono text-[11px]">${r.password}</td>
-                            <td class="py-6 text-amber-500 font-black text-sm">$${Number(r.balance).toLocaleString()}</td>
-                            <td class="py-6 text-right"><button onclick="window.del('${d.id}')" class="text-red-500 text-[9px] font-bold border border-red-500/20 px-2 py-1 rounded">TERM</button></td>
-                        `;
-                        l.appendChild(tr);
-                    });
+            await signInAnonymously(auth);
+            const col = collection(db, 'artifacts', aid, 'public', 'data', 'users');
+            onSnapshot(col, (s) => {
+                const l = document.getElementById('pList');
+                document.getElementById('loader').style.display = 'none';
+                l.innerHTML = '';
+                s.forEach((d) => {
+                    const r = d.data();
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-white/5";
+                    tr.innerHTML = `
+                        <td class="py-6 font-bold uppercase italic text-sm">${r.name}</td>
+                        <td class="py-6 text-white/40 font-mono text-[11px]">${r.password}</td>
+                        <td class="py-6 text-amber-500 font-black text-sm">$${Number(r.balance).toLocaleString()}</td>
+                        <td class="py-6 text-right"><button onclick="window.del('${d.id}')" class="text-red-500 text-[9px] font-bold border border-red-500/20 px-2 py-1 rounded">TERM</button></td>
+                    `;
+                    l.appendChild(tr);
                 });
+            });
 
-                document.getElementById('pForm').onsubmit = async (e) => {
-                    e.preventDefault();
-                    await addDoc(col, { name: document.getElementById('n').value, balance: document.getElementById('b').value, password: document.getElementById('p').value });
-                    document.getElementById('pForm').reset();
-                };
-            } catch (e) { console.error(e); }
+            document.getElementById('pForm').onsubmit = async (e) => {
+                e.preventDefault();
+                await addDoc(col, { name: document.getElementById('n').value, balance: document.getElementById('b').value, password: document.getElementById('p').value });
+                document.getElementById('pForm').reset();
+            };
         }
         window.del = (id) => deleteDoc(doc(db, 'artifacts', aid, 'public', 'data', 'users', id));
         init();
