@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdinCore | Client Portal</title>
+    <title>OdinCore | Client Vault Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -11,75 +11,116 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #020617; 
             color: white; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-            margin: 0; 
+            display: flex;
+            align-items: center;
+            justify-center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: radial-gradient(circle at top right, rgba(251, 191, 36, 0.05), transparent);
         }
-        .login-card { 
+        .glass { 
             background: rgba(15, 23, 42, 0.8); 
-            backdrop-filter: blur(20px); 
+            backdrop-filter: blur(16px); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
-            width: 100%; 
-            max-width: 420px; 
-            border-radius: 2.5rem; 
-            padding: 3.5rem; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); 
         }
         .input-field {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            color: white;
         }
         .input-field:focus {
             border-color: #fbbf24;
             background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+            outline: none;
         }
     </style>
 </head>
-<body>
+<body class="p-6">
 
-    <div class="login-card text-center">
-        <div class="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-amber-500/30">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+    <div class="glass w-full max-w-md p-10 rounded-[3rem] shadow-2xl mx-auto">
+        <div class="text-center mb-10">
+            <div class="inline-flex w-12 h-12 bg-amber-500 rounded-2xl items-center justify-center font-black text-black italic text-2xl mb-4">O</div>
+            <h2 class="text-2xl font-black italic tracking-tighter uppercase leading-none">CLIENT<span class="text-amber-500">VAULT</span></h2>
+            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-3">Secure Sovereign Access</p>
         </div>
 
-        <h1 class="text-3xl font-black tracking-tighter uppercase italic">Client <span class="text-amber-500">Portal</span></h1>
-        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-3 mb-12">Authorized Access Only</p>
-        
-        <div class="space-y-5">
-            <div class="text-left">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Client Email</label>
-                <input type="email" id="userEmail" placeholder="vault@client.com" class="input-field w-full rounded-2xl p-5 text-sm font-bold outline-none text-white placeholder:text-slate-700 uppercase tracking-widest">
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Account Name</label>
+                <input type="text" id="username" placeholder="Enter Name" class="input-field w-full rounded-2xl py-4 px-6 text-sm font-bold" required>
+            </div>
+            
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Vault Passkey</label>
+                <input type="password" id="password" placeholder="••••••••••••" class="input-field w-full rounded-2xl py-4 px-6 text-sm font-bold" required>
             </div>
 
-            <div class="text-left">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Secure Key</label>
-                <input type="password" id="userPass" placeholder="••••••••" class="input-field w-full rounded-2xl p-5 text-sm font-bold outline-none text-white placeholder:text-slate-700">
+            <div id="errorMessage" class="hidden text-red-500 text-[10px] font-bold uppercase text-center bg-red-500/10 py-3 rounded-xl">
+                Invalid Credentials
             </div>
-
-            <button onclick="handleLogin()" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-5 rounded-2xl text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-amber-500/10 active:scale-95 mt-4">
-                Verify Identity
+            
+            <button type="submit" id="loginBtn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-5 rounded-2xl text-[10px] uppercase tracking-[0.2em] transition-all">
+                Unlock Portfolio
             </button>
-        </div>
+        </form>
 
-        <div class="mt-10">
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                New Prospect? <a href="register.html" class="text-amber-500 hover:underline">Apply for Entry</a>
-            </p>
-            <a href="index.html" class="inline-block mt-8 text-[9px] font-bold text-slate-600 hover:text-slate-400 uppercase tracking-widest transition-colors italic">Return to Landing</a>
+        <div class="mt-10 text-center border-t border-white/5 pt-8">
+            <a href="index.html" class="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-amber-500 transition-colors">Return to Landing</a>
         </div>
     </div>
 
-    <script>
-        function handleLogin() {
-            // For now, we allow access to the dashboard to show the flow
-            window.location.href = "user dashboard.html";
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        signInAnonymously(auth);
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const userInp = document.getElementById('username').value;
+            const passInp = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('errorMessage');
+
+            btn.disabled = true;
+            btn.innerHTML = 'VERIFYING NODE...';
+            errorDiv.classList.add('hidden');
+
+            try {
+                // Fetch all users to check (Simple approach for small DB)
+                const querySnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+                let authenticatedUser = null;
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.name.toLowerCase() === userInp.toLowerCase() && data.password === passInp) {
+                        authenticatedUser = { id: doc.id, ...data };
+                    }
+                });
+
+                if (authenticatedUser) {
+                    // Save user to session so Dashboard can read it
+                    localStorage.setItem('odin_active_user', JSON.stringify(authenticatedUser));
+                    btn.innerHTML = 'ACCESS GRANTED';
+                    btn.classList.replace('bg-amber-500', 'bg-green-500');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                } else {
+                    throw new Error("Invalid");
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = 'Unlock Portfolio';
+                errorDiv.classList.remove('hidden');
+            }
+        };
     </script>
 </body>
 </html>
