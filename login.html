@@ -16,24 +16,10 @@
             justify-center;
             min-height: 100vh;
             margin: 0;
-            background-image: radial-gradient(circle at top right, rgba(251, 191, 36, 0.05), transparent);
         }
-        .glass { 
-            background: rgba(15, 23, 42, 0.8); 
-            backdrop-filter: blur(16px); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-        }
-        .input-field {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            color: white;
-        }
-        .input-field:focus {
-            border-color: #fbbf24;
-            background: rgba(0, 0, 0, 0.5);
-            outline: none;
-        }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .input-field { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: 0.3s; }
+        .input-field:focus { border-color: #fbbf24; background: rgba(0, 0, 0, 0.5); outline: none; }
     </style>
 </head>
 <body class="p-6">
@@ -75,6 +61,7 @@
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // Firebase logic remains same as previous setup
         const firebaseConfig = JSON.parse(__firebase_config);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
         const app = initializeApp(firebaseConfig);
@@ -95,7 +82,6 @@
             errorDiv.classList.add('hidden');
 
             try {
-                // Fetch all users to check (Simple approach for small DB)
                 const querySnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
                 let authenticatedUser = null;
 
@@ -107,11 +93,10 @@
                 });
 
                 if (authenticatedUser) {
-                    // Save user to session so Dashboard can read it
                     localStorage.setItem('odin_active_user', JSON.stringify(authenticatedUser));
                     btn.innerHTML = 'ACCESS GRANTED';
                     btn.classList.replace('bg-amber-500', 'bg-green-500');
-                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                    setTimeout(() => window.location.href = 'client wealth dashboard.html', 1000);
                 } else {
                     throw new Error("Invalid");
                 }
