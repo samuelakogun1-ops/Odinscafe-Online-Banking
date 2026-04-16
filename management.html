@@ -5,56 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OdinCore | Sovereign Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'JetBrains Mono', monospace; background-color: #020617; color: #fbbf24; }
-        .glass-panel { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(251, 191, 36, 0.2); }
-        .matrix-input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(251, 191, 36, 0.3); color: white; padding: 12px; border-radius: 4px; width: 100%; outline: none; }
-        .btn-gold { background: #fbbf24; color: #000; font-weight: 800; padding: 12px; border-radius: 4px; text-transform: uppercase; font-size: 10px; width: 100%; transition: 0.3s; }
-        .btn-gold:hover { background: white; }
+        body { background: #020617; color: #fbbf24; font-family: monospace; }
+        .panel { background: rgba(15, 23, 42, 0.9); border: 1px solid #fbbf2433; padding: 20px; border-radius: 8px; }
+        input { background: #000; border: 1px solid #fbbf2455; color: #fff; padding: 10px; width: 100%; margin-bottom: 10px; outline: none; }
+        button { background: #fbbf24; color: #000; font-weight: bold; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        tr { border-bottom: 1px solid #ffffff11; }
+        th { text-align: left; color: #ffffff55; font-size: 10px; text-transform: uppercase; padding: 10px 0; }
+        td { padding: 15px 0; font-size: 12px; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
-            <div>
-                <h1 class="text-2xl font-black italic uppercase">ODIN<span class="text-white">_MATRIX</span></h1>
-                <div class="flex items-center gap-3 mt-2">
-                    <div id="statusDot" class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
-                    <span id="statusText" class="text-[10px] font-bold uppercase text-amber-500 tracking-widest">System Link: Primed</span>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="location.reload()" class="text-[9px] bg-white/5 px-3 py-2 rounded text-white font-bold uppercase hover:bg-white/10">Refresh Node</button>
-                <button onclick="window.location.href='terminal.html'" class="text-[9px] border border-white/20 px-4 py-2 hover:bg-white/10 text-white">Back</button>
-            </div>
-        </header>
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-10">
+            <h1 style="font-size: 24px; font-weight: 900 italic;">ODIN_MATRIX</h1>
+            <div id="status" style="color: red; font-size: 10px; font-weight: bold;">[ NODE: CONNECTING... ]</div>
+        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="glass-panel p-6 rounded-lg">
-                <h2 class="text-[10px] font-bold uppercase mb-6 text-white italic border-l-2 border-amber-500 pl-3">Identity Provisioning</h2>
-                <form id="pForm" class="space-y-4">
-                    <input type="text" id="pName" class="matrix-input" placeholder="FULL NAME" required>
-                    <input type="number" id="pBal" class="matrix-input" placeholder="BALANCE ($)" required>
-                    <input type="text" id="pPass" class="matrix-input" placeholder="PASSKEY" required>
-                    <button type="submit" id="pBtn" class="btn-gold">Execute Provisioning</button>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="panel">
+                <h2 style="font-size: 12px; margin-bottom: 20px; color: #fff;">PROVISION IDENTITY</h2>
+                <form id="f">
+                    <input type="text" id="n" placeholder="NAME" required>
+                    <input type="number" id="b" placeholder="BALANCE" required>
+                    <input type="text" id="p" placeholder="PASSWORD" required>
+                    <button type="submit" id="s">EXECUTE</button>
                 </form>
             </div>
 
-            <div class="lg:col-span-2 glass-panel p-6 rounded-lg min-h-[400px]">
-                <table class="w-full text-left text-[11px]">
-                    <thead class="text-white/30 uppercase border-b border-white/5">
-                        <tr><th class="pb-4">Identity</th><th class="pb-4">Passkey</th><th class="pb-4">Liquidity</th><th class="pb-4 text-right">Action</th></tr>
-                    </thead>
-                    <tbody id="pTable"></tbody>
+            <div class="md:col-span-2 panel">
+                <table style="width: 100%;">
+                    <thead><tr><th>Identity</th><th>Key</th><th>Liquidity</th><th></th></tr></thead>
+                    <tbody id="t"></tbody>
                 </table>
-                <div id="loading" class="text-center py-20 text-white/10 text-[10px] uppercase italic">Awaiting Registry Response...</div>
             </div>
-        </div>
-
-        <div class="mt-8 bg-black/80 p-4 border border-white/5 rounded font-mono text-[9px] text-slate-500 overflow-y-auto max-h-32" id="logs">
-            <p>> Booting System...</p>
         </div>
     </div>
 
@@ -63,69 +48,52 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        const log = (m, c='slate-500') => {
-            const l = document.getElementById('logs');
-            l.innerHTML += `<p class="text-${c}">[${new Date().toLocaleTimeString()}] > ${m}</p>`;
-            l.scrollTop = l.scrollHeight;
-        }
-
-        const config = JSON.parse(__firebase_config);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
-        const app = initializeApp(config);
+        const cfg = JSON.parse(__firebase_config);
+        const app = initializeApp(cfg);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const aid = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
 
-        // Immediate Auth
+        // FORCE CONNECTION
         signInAnonymously(auth).then(() => {
-            log("Auth Ready.", "green-500");
-            document.getElementById('statusDot').classList.replace('bg-amber-500', 'bg-green-500');
-            document.getElementById('statusText').innerText = "System Link: Online";
-            document.getElementById('statusText').classList.replace('text-amber-500', 'text-green-500');
+            document.getElementById('status').style.color = 'lime';
+            document.getElementById('status').innerText = '[ NODE: ONLINE ]';
             
-            // Start Sync
-            const col = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-            onSnapshot(col, (snap) => {
-                const table = document.getElementById('pTable');
-                document.getElementById('loading').style.display = 'none';
-                table.innerHTML = '';
-                snap.forEach((d) => {
-                    const u = d.data();
+            const col = collection(db, 'artifacts', aid, 'public', 'data', 'users');
+            
+            // LIVE SYNC
+            onSnapshot(col, (s) => {
+                const tbody = document.getElementById('t');
+                tbody.innerHTML = '';
+                s.forEach((d) => {
+                    const r = d.data();
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td class="py-4 font-bold text-white uppercase italic">${u.name}</td>
-                        <td class="py-4 opacity-40">${u.password}</td>
-                        <td class="py-4 text-amber-500 font-bold">$${Number(u.balance).toLocaleString()}</td>
-                        <td class="py-4 text-right"><button onclick="window.purge('${d.id}')" class="text-red-500 font-bold text-[8px]">DELETE</button></td>
+                        <td style="color:#fff; font-weight:bold;">${r.name}</td>
+                        <td style="opacity:0.5;">${r.password}</td>
+                        <td style="color:#fbbf24;">$${Number(r.balance).toLocaleString()}</td>
+                        <td style="text-align:right;"><button onclick="window.del('${d.id}')" style="background:transparent; color:red; width:auto; padding:0; font-size:9px;">TERMINATE</button></td>
                     `;
-                    table.appendChild(tr);
+                    tbody.appendChild(tr);
                 });
-                log("Data Synced.", "green-500");
-            }, (err) => log("Sync Err: " + err.message, "red-500"));
+            });
 
-            // Form Submit Logic
-            document.getElementById('pForm').onsubmit = async (e) => {
+            // SAVE DATA
+            document.getElementById('f').onsubmit = async (e) => {
                 e.preventDefault();
-                const btn = document.getElementById('pBtn');
-                btn.disabled = true;
-                btn.innerText = "EXECUTING...";
-                try {
-                    await addDoc(col, {
-                        name: document.getElementById('pName').value,
-                        balance: document.getElementById('pBal').value,
-                        password: document.getElementById('pPass').value,
-                        created: new Date().getTime()
-                    });
-                    log("Provision Success.", "green-500");
-                    document.getElementById('pForm').reset();
-                } catch (err) {
-                    log("Fail: " + err.message, "red-500");
-                }
-                btn.disabled = false;
-                btn.innerText = "Execute Provisioning";
+                const btn = document.getElementById('s');
+                btn.innerText = 'WORKING...';
+                await addDoc(col, {
+                    name: document.getElementById('n').value,
+                    balance: document.getElementById('b').value,
+                    password: document.getElementById('p').value
+                });
+                document.getElementById('f').reset();
+                btn.innerText = 'EXECUTE';
             };
-        }).catch(err => log("Auth Fail: " + err.message, "red-500"));
+        });
 
-        window.purge = (id) => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
+        window.del = (id) => deleteDoc(doc(db, 'artifacts', aid, 'public', 'data', 'users', id));
     </script>
 </body>
 </html>
