@@ -8,10 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'JetBrains Mono', monospace; background-color: #050505; color: #fbbf24; }
-        .matrix-border { border: 1px solid rgba(251, 191, 36, 0.2); background: rgba(0, 0, 0, 0.8); }
-        .input-matrix { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(251, 191, 36, 0.3); color: white; padding: 12px; border-radius: 8px; width: 100%; outline: none; }
-        .input-matrix:focus { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .matrix-border { border: 1px solid rgba(251, 191, 36, 0.2); background: rgba(0, 0, 0, 0.9); }
+        .input-matrix { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(251, 191, 36, 0.2); color: white; padding: 14px; border-radius: 8px; width: 100%; outline: none; }
+        .input-matrix:focus { border-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -20,9 +20,10 @@
         <header class="flex justify-between items-center mb-10 border-b border-amber-500/20 pb-6">
             <div>
                 <h1 class="text-2xl font-black tracking-tighter uppercase italic">CLIENT<span class="text-white">_MATRIX</span></h1>
-                <div class="flex items-center mt-2">
-                    <span id="statusDot" class="status-dot bg-red-500 animate-pulse"></span>
-                    <span id="statusText" class="text-[9px] uppercase tracking-[0.3em] opacity-60">Initializing Secure Link...</span>
+                <div class="flex items-center mt-2 gap-3">
+                    <span id="statusDot" class="status-dot bg-red-500"></span>
+                    <span id="statusText" class="text-[9px] uppercase tracking-[0.3em] opacity-60">Node Offline</span>
+                    <button onclick="location.reload()" class="text-[8px] bg-white/5 px-2 py-1 rounded hover:bg-white/10 uppercase font-bold text-white">Hard Reset</button>
                 </div>
             </div>
             <button onclick="window.location.href='terminal.html'" class="text-[10px] border border-amber-500/30 px-6 py-2 hover:bg-amber-500 hover:text-black transition-all font-bold uppercase">Back to Terminal</button>
@@ -34,50 +35,56 @@
                 <h2 class="text-xs font-bold uppercase tracking-widest mb-6 border-b border-amber-500/10 pb-2 text-white italic">Identity Provisioning</h2>
                 <form id="provisionForm" class="space-y-5">
                     <div>
-                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Client Full Name</label>
-                        <input type="text" id="newName" class="input-matrix" placeholder="e.g. Alexander Vance" required>
+                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Full Name</label>
+                        <input type="text" id="newName" class="input-matrix" placeholder="e.g. Vance Archer" required>
                     </div>
                     <div>
-                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Opening Balance (USD)</label>
-                        <input type="number" id="newBalance" class="input-matrix" placeholder="1000000" required>
+                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Balance (USD)</label>
+                        <input type="number" id="newBalance" class="input-matrix" placeholder="2500000" required>
                     </div>
                     <div>
                         <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Vault Passkey</label>
-                        <input type="text" id="newPass" class="input-matrix" placeholder="Set Password" required>
+                        <input type="text" id="newPass" class="input-matrix" placeholder="Secret Key" required>
                     </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-amber-500 text-black font-black py-4 rounded-lg text-[10px] uppercase tracking-[0.2em] mt-4 hover:bg-white transition-all">
+                    <button type="submit" id="submitBtn" class="w-full bg-amber-500 text-black font-black py-4 rounded-lg text-[10px] uppercase tracking-[0.2em] mt-4 hover:bg-white transition-all shadow-[0_0_20px_rgba(251,191,36,0.2)]">
                         Execute Provisioning
                     </button>
                 </form>
             </div>
 
             <!-- Client Registry -->
-            <div class="lg:col-span-2 matrix-border p-8 rounded-2xl flex flex-col min-h-[400px]">
-                <h2 class="text-xs font-bold uppercase tracking-widest mb-6 border-b border-amber-500/10 pb-2 text-white italic">Active Sovereign Registry</h2>
+            <div class="lg:col-span-2 matrix-border p-8 rounded-2xl flex flex-col min-h-[450px]">
+                <div class="flex justify-between items-center mb-6 border-b border-amber-500/10 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-white italic">Sovereign Registry</h2>
+                    <span id="syncIndicator" class="text-[8px] opacity-30 italic">Not Syncing</span>
+                </div>
+                
                 <div class="overflow-x-auto flex-grow">
                     <table class="w-full text-left text-[11px]">
                         <thead>
                             <tr class="opacity-30 uppercase tracking-widest border-b border-white/5">
-                                <th class="pb-4">Client Identity</th>
+                                <th class="pb-4">Identity</th>
                                 <th class="pb-4">Passkey</th>
-                                <th class="pb-4">Liquidity</th>
-                                <th class="pb-4 text-right">Protocol</th>
+                                <th class="pb-4">Balance</th>
+                                <th class="pb-4 text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody id="userList" class="divide-y divide-white/5">
-                            <!-- JS Injection Point -->
+                            <!-- JS Injection -->
                         </tbody>
                     </table>
-                    <div id="loadingMsg" class="py-12 text-center opacity-20 italic text-xs">Waiting for registry sync...</div>
                 </div>
             </div>
         </div>
 
         <!-- Debug Console -->
         <div class="mt-8 p-4 bg-black/50 border border-white/5 rounded-lg font-mono text-[9px] text-slate-500">
-            <p class="mb-1 text-amber-500/50 uppercase font-bold text-[8px]">System Output Log:</p>
-            <div id="debugLog" class="max-h-20 overflow-y-auto space-y-1">
-                <p>> Booting Management Interface...</p>
+            <div class="flex justify-between mb-2">
+                <p class="text-amber-500 uppercase font-bold text-[8px]">System Output Log:</p>
+                <p id="logTime" class="text-[8px]"></p>
+            </div>
+            <div id="debugLog" class="max-h-24 overflow-y-auto space-y-1">
+                <p class="text-white/40">> Initializing Sovereign Core...</p>
             </div>
         </div>
     </div>
@@ -87,10 +94,11 @@
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        function log(msg) {
+        function log(msg, color = 'slate-500') {
             const div = document.getElementById('debugLog');
             const p = document.createElement('p');
-            p.innerText = `> ${msg}`;
+            p.className = `text-${color}`;
+            p.innerText = `[${new Date().toLocaleTimeString()}] > ${msg}`;
             div.appendChild(p);
             div.scrollTop = div.scrollHeight;
         }
@@ -101,67 +109,62 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        log("App Initialized. Attempting Auth...");
-
-        // Secure Authentication Flow
-        signInAnonymously(auth).then(() => {
-            log("Auth Request Sent...");
-        }).catch(err => {
-            log(`Auth Error: ${err.message}`);
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                log(`Connected as UID: ${user.uid}`);
-                document.getElementById('statusDot').className = "status-dot bg-green-500";
-                document.getElementById('statusText').innerText = "NODE CONNECTION: ESTABLISHED";
-                document.getElementById('statusText').classList.add('text-green-500');
+        // Immediate Force Auth
+        async function forceConnect() {
+            log("Forcing Auth Sequence...", "white");
+            try {
+                const cred = await signInAnonymously(auth);
+                log(`Auth Locked: ${cred.user.uid}`, "green-500");
+                
+                document.getElementById('statusDot').className = "status-dot bg-green-500 shadow-[0_0_10px_#22c55e]";
+                document.getElementById('statusText').innerText = "NODE ONLINE";
+                document.getElementById('statusText').className = "text-[9px] uppercase tracking-[0.3em] text-green-500 font-bold";
+                
                 startRegistrySync();
+            } catch (err) {
+                log(`Auth Failure: ${err.message}`, "red-500");
             }
-        });
+        }
 
         function startRegistrySync() {
-            log("Syncing Registry...");
+            log("Establishing Registry Uplink...", "white");
             const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
             
             onSnapshot(usersRef, (snapshot) => {
                 const list = document.getElementById('userList');
-                const loading = document.getElementById('loadingMsg');
                 list.innerHTML = '';
-                loading.style.display = snapshot.empty ? 'block' : 'none';
-                
-                if(snapshot.empty) log("Registry is currently empty.");
+                document.getElementById('syncIndicator').innerText = "LIVE SYNC ACTIVE";
+                document.getElementById('syncIndicator').className = "text-[8px] text-green-500 font-bold italic";
+
+                if(snapshot.empty) log("Registry is empty. Waiting for first provision.", "amber-500");
 
                 snapshot.forEach((userDoc) => {
                     const data = userDoc.data();
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-white/5 transition-all group";
+                    tr.className = "hover:bg-white/5 transition-all";
                     tr.innerHTML = `
-                        <td class="py-4 font-bold text-white uppercase tracking-tighter">${data.name}</td>
+                        <td class="py-4 font-bold text-white uppercase">${data.name}</td>
                         <td class="py-4 opacity-50">${data.password}</td>
                         <td class="py-4 text-amber-500 font-bold">$${Number(data.balance).toLocaleString()}</td>
                         <td class="py-4 text-right">
-                            <button onclick="deleteUser('${userDoc.id}')" class="px-3 py-1 bg-red-500/10 text-red-500 rounded border border-red-500/20 hover:bg-red-500 hover:text-white transition-all text-[8px] font-black uppercase">Terminate</button>
+                            <button onclick="terminateUser('${userDoc.id}')" class="text-red-500 hover:text-white uppercase font-bold text-[8px] border border-red-500/20 px-2 py-1 rounded hover:bg-red-500 transition-all">Terminate</button>
                         </td>
                     `;
                     list.appendChild(tr);
                 });
-                log(`Registry Sync Successful. Total Users: ${snapshot.size}`);
+                log(`Registry Synced. Records: ${snapshot.size}`, "green-500");
             }, (err) => {
-                log(`Sync Error: ${err.message}`);
+                log(`Sync Error: ${err.message}`, "red-500");
             });
         }
 
         document.getElementById('provisionForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "PROVISIONING...";
 
             try {
-                btn.disabled = true;
-                btn.innerText = "EXECUTING...";
-                log("Executing Provisioning Sequence...");
-
                 const userData = {
                     name: document.getElementById('newName').value,
                     balance: document.getElementById('newBalance').value,
@@ -169,26 +172,27 @@
                     createdAt: new Date().toISOString()
                 };
 
+                log(`Initiating Provisioning for: ${userData.name}`, "white");
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), userData);
-                
-                log(`SUCCESS: Identity ${userData.name} Provisioned.`);
+                log("Provisioning Sequence Successful.", "green-500");
                 document.getElementById('provisionForm').reset();
             } catch (err) {
-                log(`Critical Failure: ${err.message}`);
-                alert("Provisioning Failure: Check System Log");
+                log(`Critical Provisioning Failure: ${err.message}`, "red-500");
             } finally {
                 btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = "EXECUTE PROVISIONING";
             }
         };
 
-        window.deleteUser = async (id) => {
+        window.terminateUser = async (id) => {
             if(confirm("Confirm Identity Termination?")) {
-                log(`Terminating UID: ${id}...`);
+                log(`Deleting record: ${id}`, "amber-500");
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
-                log("Termination Complete.");
             }
         };
+
+        // Start connection
+        forceConnect();
     </script>
 </body>
 </html>
