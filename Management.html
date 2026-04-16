@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OdinCore | Sovereign Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #020617; color: #fbbf24; font-family: 'JetBrains Mono', monospace; }
+        .panel { background: rgba(15, 23, 42, 0.9); border: 1px solid #fbbf2433; padding: 24px; border-radius: 12px; backdrop-filter: blur(10px); }
+        input { background: rgba(0,0,0,0.4); border: 1px solid #fbbf2444; color: #fff; padding: 12px; width: 100%; margin-bottom: 15px; border-radius: 6px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #fbbf24; background: rgba(0,0,0,0.6); }
+        button { background: #fbbf24; color: #000; font-weight: 900; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: #fff; transform: translateY(-1px); }
+        tr { border-bottom: 1px solid #ffffff05; transition: 0.2s; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        th { text-align: left; color: #ffffff44; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; padding: 12px 0; }
+        td { padding: 16px 0; font-size: 13px; }
+        .status-pill { padding: 4px 10px; border-radius: 100px; font-size: 9px; font-weight: bold; letter-spacing: 1px; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">ODIN<span class="text-white">_MATRIX</span></h1>
+                <div class="flex items-center gap-3 mt-2">
+                    <div id="dot" class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+                    <span id="stat" class="status-pill bg-red-500/10 text-red-500">NODE: DISCONNECTED</span>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="location.reload()" class="w-auto px-4 py-2 bg-white/5 text-white border border-white/10 text-[10px]">RE-SYNC</button>
+                <button onclick="window.location.href='terminal.html'" class="w-auto px-4 py-2 bg-white/5 text-white border border-white/10 text-[10px]">EXIT</button>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Provision Form -->
+            <div class="panel h-fit">
+                <h2 class="text-xs font-bold text-white mb-6 uppercase tracking-widest border-l-4 border-amber-500 pl-4">Identity Provisioning</h2>
+                <form id="f">
+                    <label class="text-[9px] uppercase opacity-40 mb-2 block">Full Legal Name</label>
+                    <input type="text" id="n" placeholder="Vance Archer" required>
+                    
+                    <label class="text-[9px] uppercase opacity-40 mb-2 block">Initial Liquidity ($)</label>
+                    <input type="number" id="b" placeholder="5000000" required>
+                    
+                    <label class="text-[9px] uppercase opacity-40 mb-2 block">Vault Passkey</label>
+                    <input type="text" id="p" placeholder="••••••••" required>
+                    
+                    <button type="submit" id="s">Execute Provisioning</button>
+                </form>
+            </div>
+
+            <!-- Registry Table -->
+            <div class="lg:col-span-2 panel min-h-[500px]">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-widest border-l-4 border-amber-500 pl-4">Sovereign Registry</h2>
+                    <span id="count" class="text-[10px] opacity-30 italic font-mono">Records: 0</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th>Identity</th>
+                                <th>Access Key</th>
+                                <th>Balance</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="t"></tbody>
+                    </table>
+                    <div id="loader" class="text-center py-20 text-white/5 text-xs uppercase italic tracking-widest">Awaiting uplink...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const cfg = JSON.parse(__firebase_config);
+        const app = initializeApp(cfg);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const aid = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
+
+        async function boot() {
+            try {
+                await signInAnonymously(auth);
+                document.getElementById('dot').className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]";
+                document.getElementById('stat').innerText = "NODE: ONLINE";
+                document.getElementById('stat').className = "status-pill bg-green-500/10 text-green-500";
+                
+                const col = collection(db, 'artifacts', aid, 'public', 'data', 'users');
+                
+                onSnapshot(col, (s) => {
+                    const tbody = document.getElementById('t');
+                    const loader = document.getElementById('loader');
+                    loader.style.display = s.empty ? 'block' : 'none';
+                    tbody.innerHTML = '';
+                    document.getElementById('count').innerText = "Records: " + s.size;
+                    
+                    s.forEach((d) => {
+                        const r = d.data();
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="font-bold text-white uppercase italic">${r.name}</td>
+                            <td class="opacity-40 font-mono text-[11px]">${r.password}</td>
+                            <td class="text-amber-500 font-bold">$${Number(r.balance).toLocaleString()}</td>
+                            <td class="text-right">
+                                <button onclick="window.del('${d.id}')" class="w-auto bg-transparent text-red-500 text-[9px] hover:text-white border border-red-500/20 px-2 py-1 rounded">TERM</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+
+                document.getElementById('f').onsubmit = async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('s');
+                    btn.innerText = 'EXECUTING...';
+                    btn.disabled = true;
+                    await addDoc(col, {
+                        name: document.getElementById('n').value,
+                        balance: document.getElementById('b').value,
+                        password: document.getElementById('p').value,
+                        time: new Date().getTime()
+                    });
+                    document.getElementById('f').reset();
+                    btn.innerText = 'Execute Provisioning';
+                    btn.disabled = false;
+                };
+            } catch (e) { console.error(e); }
+        }
+
+        window.del = (id) => { if(confirm("Terminate Identity?")) deleteDoc(doc(db, 'artifacts', aid, 'public', 'data', 'users', id)); };
+        boot();
+    </script>
+</body>
+</html>
