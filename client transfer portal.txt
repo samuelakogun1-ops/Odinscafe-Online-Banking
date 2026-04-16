@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OdinCore | Secure Transfer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #020617; 
+            color: white; 
+            margin: 0; 
+            min-height: 100vh;
+        }
+        .sidebar { 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(20px); 
+            border-right: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+        }
+        .input-field {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #fbbf24;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .nav-link { transition: all 0.2s ease; }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body class="flex flex-col lg:flex-row">
+
+    <!-- Client Sidebar -->
+    <aside class="sidebar w-full lg:w-72 flex-shrink-0 flex flex-col p-8 lg:h-screen sticky top-0 z-40">
+        <div class="mb-12">
+            <h2 class="text-xl font-black italic tracking-tighter uppercase">ODIN<span class="text-amber-500">CORE</span></h2>
+            <p class="text-[8px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1">Private Wealth</p>
+        </div>
+
+        <nav class="space-y-1 flex-grow">
+            <a href="user dashboard.html" class="nav-link flex items-center gap-4 px-5 py-4 rounded-2xl text-slate-400 font-bold text-xs uppercase tracking-widest">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                Overview
+            </a>
+            <a href="transfer.html" class="nav-link active flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                Transfers
+            </a>
+            <a href="#" class="nav-link flex items-center gap-4 px-5 py-4 rounded-2xl text-slate-400 font-bold text-xs uppercase tracking-widest">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                Vault Cards
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-8 border-t border-white/5">
+            <a href="login.html" class="flex items-center gap-3 text-slate-500 font-bold text-[10px] uppercase tracking-widest hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                Secure Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-6 lg:p-12">
+        <header class="mb-12">
+            <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none">Capital <span class="text-amber-500">Transfer</span></h1>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-2">Execute global wire & internal settlements</p>
+        </header>
+
+        <div class="max-w-3xl">
+            <div class="glass-panel p-10">
+                <form onsubmit="handleTransfer(event)" class="space-y-8">
+                    <!-- Amount Section -->
+                    <div>
+                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-3 block">Settlement Amount (USD)</label>
+                        <div class="relative">
+                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500 font-bold">$</span>
+                            <input type="number" placeholder="0.00" class="input-field w-full rounded-2xl py-6 pl-12 pr-6 text-2xl font-black text-white outline-none" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Beneficiary -->
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-3 block">Beneficiary Name</label>
+                            <input type="text" placeholder="Legal Entity / Individual" class="input-field w-full rounded-2xl p-5 text-sm font-bold text-white outline-none" required>
+                        </div>
+                        <!-- Account Number -->
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-3 block">Account Number / IBAN</label>
+                            <input type="text" placeholder="ODN-XXX-XXXX" class="input-field w-full rounded-2xl p-5 text-sm font-bold text-white outline-none" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-3 block">SWIFT / BIC Code</label>
+                        <input type="text" placeholder="Optional for internal" class="input-field w-full rounded-2xl p-5 text-sm font-bold text-white outline-none uppercase">
+                    </div>
+
+                    <div class="pt-6 border-t border-white/5">
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-6 rounded-2xl text-xs uppercase tracking-[0.25em] transition-all shadow-xl shadow-amber-500/10">
+                            Execute Transfer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Security Modal -->
+    <div id="securityModal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
+        <div class="bg-slate-900 border border-white/10 p-12 rounded-[3rem] max-w-md w-full text-center">
+            <div class="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-amber-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-black italic uppercase tracking-tighter text-white">Security Protocol</h2>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-4 leading-relaxed">
+                This transaction requires a <span class="text-amber-500">Manual Override</span> by an Admin Authority before assets can be released from the vault.
+            </p>
+            <div class="mt-10 p-5 bg-white/5 rounded-2xl border border-white/5 text-[10px] font-mono text-slate-500 uppercase">
+                Status: Pending Institutional Review
+            </div>
+            <button onclick="window.location.href='user dashboard.html'" class="mt-10 bg-amber-500 text-black font-black px-10 py-5 rounded-xl text-[10px] uppercase tracking-[0.2em] transition-all">
+                Return to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function handleTransfer(e) {
+            e.preventDefault();
+            document.getElementById('securityModal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
