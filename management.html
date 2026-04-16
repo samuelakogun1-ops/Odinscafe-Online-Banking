@@ -3,107 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdinCore | Sovereign Terminal</title>
+    <title>OdinCore | Sovereign Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'JetBrains Mono', monospace; background-color: #0a0a0b; color: #fbbf24; overflow: hidden; }
-        .crt-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 100; background-size: 100% 2px, 3px 100%; }
-        .scanline { width: 100%; height: 100px; z-index: 101; background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(251, 191, 36, 0.05) 50%, rgba(0, 0, 0, 0) 100%); opacity: 0.1; position: absolute; bottom: 100%; animation: scanline 6s linear infinite; }
-        @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: -100%; } }
-        .terminal-panel { border: 1px solid rgba(251, 191, 36, 0.15); background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); }
-        .btn-matrix { border: 1px solid rgba(251, 191, 36, 0.3); padding: 8px 16px; font-size: 10px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-        .btn-matrix:hover { background: #fbbf24; color: black; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+        body { font-family: 'JetBrains Mono', monospace; background-color: #020617; color: #fbbf24; }
+        .glass-panel { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(251, 191, 36, 0.2); }
+        .matrix-input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(251, 191, 36, 0.3); color: white; padding: 12px; border-radius: 4px; width: 100%; outline: none; }
+        .btn-gold { background: #fbbf24; color: #000; font-weight: 800; padding: 12px; border-radius: 4px; text-transform: uppercase; font-size: 10px; width: 100%; transition: 0.3s; }
+        .btn-gold:hover { background: white; transform: scale(1.02); }
     </style>
 </head>
-<body class="p-6 h-screen flex flex-col">
-    <div class="crt-overlay"></div>
-    <div class="scanline"></div>
+<body class="p-4 md:p-8">
 
-    <!-- Header -->
-    <header class="flex justify-between items-center mb-6 border-b border-amber-500/20 pb-4 relative z-10">
-        <div>
-            <h1 class="text-xl font-black italic tracking-tighter">ODINCORE SYSTEM TERMINAL</h1>
-            <p class="text-[9px] opacity-50 uppercase tracking-[0.3em]">Authorized Access Only • Sovereign Protocol v4.0.1</p>
-        </div>
-        <div class="flex gap-4">
-            <button onclick="nav('management.html')" class="btn-matrix">Client Matrix</button>
-            <button onclick="nav('index.html')" class="btn-matrix text-white/50 border-white/10">Disconnect</button>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow relative z-10 overflow-hidden">
-        
-        <!-- Left: Wire Intercepts -->
-        <div class="lg:col-span-2 terminal-panel rounded p-4 overflow-hidden flex flex-col">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></div>
-                <h2 class="text-[10px] font-bold uppercase tracking-widest">Inbound Wire Intercepts</h2>
-            </div>
-            <div id="interceptLog" class="flex-grow font-mono text-[11px] space-y-2 opacity-80 overflow-y-auto pr-2">
-                <p class="text-white/40 italic text-[10px]">Waiting for incoming transmission...</p>
-            </div>
-        </div>
-
-        <!-- Right: Status/Node Info -->
-        <div class="space-y-6 overflow-y-auto">
-            <!-- Node Integrity -->
-            <div class="terminal-panel rounded p-5">
-                <h3 class="text-[9px] font-bold uppercase mb-4 text-amber-500">Node Integrity</h3>
-                <div class="space-y-3">
-                    <div class="flex justify-between text-[10px]"><span>CPU LOAD:</span><span id="cpuVal">12.4%</span></div>
-                    <div class="flex justify-between text-[10px]"><span>NETWORK:</span><span class="text-green-500 font-bold">OPTIMAL</span></div>
-                    <div class="flex justify-between text-[10px]"><span>ENCRYPTION:</span><span>AES-256-GCM</span></div>
-                    <div class="w-full bg-white/5 h-1 mt-2"><div class="bg-amber-500 h-full w-3/4 shadow-[0_0_10px_#fbbf24]"></div></div>
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
+            <div>
+                <h1 class="text-2xl font-black italic">ODIN_MATRIX</h1>
+                <div class="flex items-center gap-3 mt-2">
+                    <div id="statusDot" class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></div>
+                    <span id="statusText" class="text-[10px] font-bold uppercase text-red-500">Node: Local Cache Active (Connecting...)</span>
                 </div>
             </div>
+            <button onclick="window.location.href='terminal.html'" class="text-[10px] border border-white/20 px-4 py-2 hover:bg-white/10">Back</button>
+        </header>
 
-            <!-- System Log -->
-            <div class="terminal-panel rounded p-5">
-                <h3 class="text-[9px] font-bold uppercase mb-4 text-amber-500">System Log</h3>
-                <div class="text-[9px] space-y-2 font-mono opacity-70">
-                    <p>> AUTHENTICATION SUCCESSFUL</p>
-                    <p>> SOVEREIGN NODE ESTABLISHED</p>
-                    <p>> MONITORING PORT 8080...</p>
-                    <p id="timeLog"></p>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <h2 class="text-[10px] font-bold uppercase mb-6 text-white italic border-l-2 border-amber-500 pl-3">Provisioning</h2>
+                <form id="pForm" class="space-y-4">
+                    <input type="text" id="pName" class="matrix-input" placeholder="FULL NAME" required>
+                    <input type="number" id="pBal" class="matrix-input" placeholder="BALANCE ($)" required>
+                    <input type="text" id="pPass" class="matrix-input" placeholder="PASSKEY" required>
+                    <button type="submit" id="pBtn" class="btn-gold">Execute Provisioning</button>
+                </form>
+            </div>
+
+            <div class="lg:col-span-2 glass-panel p-6 rounded-lg min-h-[400px]">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="text-white/30 uppercase border-b border-white/5">
+                        <tr><th class="pb-4">Identity</th><th class="pb-4">Passkey</th><th class="pb-4">Liquidity</th><th class="pb-4 text-right">Action</th></tr>
+                    </thead>
+                    <tbody id="pTable"></tbody>
+                </table>
+                <div id="emptyMsg" class="text-center py-20 text-white/10 text-[10px] uppercase">Connecting to global registry...</div>
             </div>
         </div>
-    </main>
 
-    <script>
-        // Force the browser to bypass cache when navigating
-        function nav(url) {
-            const cacheBuster = "?v=" + new Date().getTime();
-            window.location.href = url + cacheBuster;
+        <div class="mt-8 bg-black/80 p-4 border border-white/5 rounded font-mono text-[9px] text-slate-500 overflow-y-auto max-h-32" id="logs">
+            <p>> System Initialization Started...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const log = (m, c='slate-500') => {
+            const l = document.getElementById('logs');
+            l.innerHTML += `<p class="text-${c}">[${new Date().toLocaleTimeString()}] > ${m}</p>`;
+            l.scrollTop = l.scrollHeight;
         }
 
-        // Fake some terminal activity
-        function updateStats() {
-            document.getElementById('cpuVal').innerText = (Math.random() * 20 + 5).toFixed(1) + "%";
-            document.getElementById('timeLog').innerText = "> SYSTEM TIME: " + new Date().toLocaleTimeString();
-        }
-        setInterval(updateStats, 2000);
+        async function start() {
+            try {
+                // FORCE RE-FETCH CONFIG
+                const config = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
+                const app = initializeApp(config);
+                const db = getFirestore(app);
+                const auth = getAuth(app);
 
-        const messages = [
-            "Intercepting SWIFT packet ID-9921...",
-            "Decrypting RSA 4096 signature...",
-            "Tracing origin: SWISS_NODE_7",
-            "Transaction value: $4,200,500 blocked.",
-            "Identity match: V. ARCHER confirmed.",
-            "Vault injection sequence primed..."
-        ];
+                log("Attempting Secure Auth...", "white");
+                const cred = await signInAnonymously(auth);
+                log("Auth Verified: " + cred.user.uid, "green-500");
 
-        function addIntercept() {
-            const log = document.getElementById('interceptLog');
-            if (log.innerHTML.includes('Waiting')) log.innerHTML = '';
-            const p = document.createElement('p');
-            p.innerText = "> " + messages[Math.floor(Math.random() * messages.length)];
-            log.prepend(p);
-            if (log.children.length > 20) log.lastElementChild.remove();
+                document.getElementById('statusDot').className = "w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]";
+                document.getElementById('statusText').innerText = "NODE: ONLINE (ENCRYPTED)";
+                document.getElementById('statusText').className = "text-[10px] font-bold uppercase text-green-500";
+
+                const col = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                
+                onSnapshot(col, (snap) => {
+                    const table = document.getElementById('pTable');
+                    document.getElementById('emptyMsg').style.display = snap.empty ? 'block' : 'none';
+                    table.innerHTML = '';
+                    snap.forEach((d) => {
+                        const u = d.data();
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="py-4 font-bold text-white uppercase italic">${u.name}</td>
+                            <td class="py-4 opacity-40">${u.password}</td>
+                            <td class="py-4 text-amber-500 font-bold">$${Number(u.balance).toLocaleString()}</td>
+                            <td class="py-4 text-right"><button onclick="window.purge('${d.id}')" class="text-red-500 font-bold text-[8px]">DELETE</button></td>
+                        `;
+                        table.appendChild(tr);
+                    });
+                    log("Registry Synchronized.", "green-500");
+                });
+
+                document.getElementById('pForm').onsubmit = async (e) => {
+                    e.preventDefault();
+                    log("Transmitting Provisioning Data...");
+                    await addDoc(col, {
+                        name: document.getElementById('pName').value,
+                        balance: document.getElementById('pBal').value,
+                        password: document.getElementById('pPass').value
+                    });
+                    log("Identity Confirmed.", "green-500");
+                    document.getElementById('pForm').reset();
+                };
+
+                window.purge = (id) => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
+
+            } catch (err) {
+                log("NODE ERROR: " + err.message, "red-500");
+            }
         }
-        setInterval(addIntercept, 4000);
+
+        // Run immediately
+        start();
     </script>
 </body>
 </html>
