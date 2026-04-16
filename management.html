@@ -9,7 +9,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; margin: 0; min-height: 100vh; }
         .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .input-box { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); outline: none; transition: 0.3s; }
+        .input-box { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); outline: none; transition: 0.3s; color: white; }
         .input-box:focus { border-color: #fbbf24; }
     </style>
 </head>
@@ -17,56 +17,111 @@
     <header class="flex justify-between items-center mb-12">
         <div>
             <h1 class="text-3xl font-black italic tracking-tighter uppercase">Account <span class="text-amber-500">Matrix</span></h1>
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Manage Client Liquidity & Credentials</p>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Live Liquidity Control</p>
         </div>
-        <a href="terminal.html" class="px-6 py-3 rounded-xl border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">Back to Terminal</a>
+        <div class="flex gap-4">
+            <a href="terminal.html" class="px-6 py-3 rounded-xl border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all">System Terminal</a>
+        </div>
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Add New User -->
-        <div class="glass-panel p-8 rounded-[2.5rem]">
-            <h3 class="text-xs font-black text-amber-500 uppercase tracking-widest mb-6">Provision New Node</h3>
-            <form class="space-y-4">
-                <input type="text" placeholder="Legal Name" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold">
-                <input type="text" placeholder="Email Address" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold">
-                <input type="number" placeholder="Initial Balance ($)" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold">
-                <button type="button" class="w-full bg-amber-500 text-black font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-amber-400 transition-all">Create Account</button>
+        <!-- Create Account Form -->
+        <div class="glass-panel p-8 rounded-[2.5rem] h-fit">
+            <h3 class="text-xs font-black text-amber-500 uppercase tracking-widest mb-6">Create New Client</h3>
+            <form id="createAccountForm" class="space-y-4">
+                <div>
+                    <label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Full Name</label>
+                    <input type="text" id="clientName" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold" required>
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Passkey / Password</label>
+                    <input type="text" id="clientPass" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold" required>
+                </div>
+                <div>
+                    <label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Initial Balance ($)</label>
+                    <input type="number" id="clientBalance" class="input-box w-full rounded-xl py-4 px-5 text-xs font-bold" required>
+                </div>
+                <button type="submit" id="createBtn" class="w-full bg-amber-500 text-black font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-amber-400 transition-all">Provision Account</button>
             </form>
         </div>
 
-        <!-- User List -->
+        <!-- Live User List -->
         <div class="lg:col-span-2 glass-panel p-8 rounded-[2.5rem]">
-            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6">Active Clients</h3>
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6">Active Database Nodes</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="text-[10px] text-slate-600 uppercase tracking-widest border-b border-white/5">
-                            <th class="pb-4">Client</th>
-                            <th class="pb-4">Status</th>
-                            <th class="pb-4 text-right">Balance</th>
+                            <th class="pb-4">Client Identifier</th>
+                            <th class="pb-4">Credential</th>
+                            <th class="pb-4 text-right">Liquidity</th>
                         </tr>
                     </thead>
-                    <tbody class="text-sm font-bold">
-                        <tr class="border-b border-white/5">
-                            <td class="py-6">
-                                <p>Excellency O.</p>
-                                <p class="text-[9px] text-slate-500 uppercase">OD-7729-001X</p>
-                            </td>
-                            <td><span class="text-[9px] px-2 py-1 bg-green-500/10 text-green-500 rounded-md">VERIFIED</span></td>
-                            <td class="text-right text-amber-500">$4,280,950.00</td>
-                        </tr>
-                        <tr>
-                            <td class="py-6">
-                                <p>Imperial Holding</p>
-                                <p class="text-[9px] text-slate-500 uppercase">OD-1102-099P</p>
-                            </td>
-                            <td><span class="text-[9px] px-2 py-1 bg-amber-500/10 text-amber-500 rounded-md">PENDING</span></td>
-                            <td class="text-right text-amber-500">$12,400,000.00</td>
-                        </tr>
+                    <tbody id="userTableBody" class="text-sm font-bold">
+                        <!-- Users will appear here -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Auth
+        const init = async () => {
+            await signInAnonymously(auth);
+            
+            // Listen for users
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snapshot) => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    row.className = "border-b border-white/5";
+                    row.innerHTML = `
+                        <td class="py-6">
+                            <p>${user.name}</p>
+                            <p class="text-[9px] text-slate-500 uppercase">UID: ${doc.id.substring(0,8)}</p>
+                        </td>
+                        <td class="text-slate-400 text-xs font-mono">${user.password}</td>
+                        <td class="text-right text-amber-500">$${Number(user.balance).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        };
+
+        // Create user logic
+        document.getElementById('createAccountForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            btn.innerHTML = 'PROVISIONING...';
+
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), {
+                name: document.getElementById('clientName').value,
+                password: document.getElementById('clientPass').value,
+                balance: parseFloat(document.getElementById('clientBalance').value),
+                createdAt: serverTimestamp()
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = 'ACCOUNT CREATED';
+            e.target.reset();
+            setTimeout(() => btn.innerHTML = 'Provision Account', 2000);
+        };
+
+        init();
+    </script>
 </body>
 </html>
