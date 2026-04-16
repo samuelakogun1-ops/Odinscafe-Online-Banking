@@ -3,88 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdinCore | Client Matrix</title>
+    <title>OdinCore | Management Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'JetBrains Mono', monospace; background-color: #050505; color: #fbbf24; }
         .matrix-border { border: 1px solid rgba(251, 191, 36, 0.2); background: rgba(0, 0, 0, 0.9); }
-        .input-matrix { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(251, 191, 36, 0.2); color: white; padding: 14px; border-radius: 8px; width: 100%; outline: none; }
-        .input-matrix:focus { border-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .input-field { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(251, 191, 36, 0.3); color: white; padding: 12px; border-radius: 6px; width: 100%; outline: none; }
+        .status-light { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="p-6">
 
     <div class="max-w-6xl mx-auto">
         <header class="flex justify-between items-center mb-10 border-b border-amber-500/20 pb-6">
             <div>
-                <h1 class="text-2xl font-black tracking-tighter uppercase italic">CLIENT<span class="text-white">_MATRIX</span></h1>
-                <div class="flex items-center mt-2 gap-3">
-                    <span id="statusDot" class="status-dot bg-red-500"></span>
-                    <span id="statusText" class="text-[9px] uppercase tracking-[0.3em] opacity-60">Node Offline</span>
-                    <button onclick="location.reload()" class="text-[8px] bg-white/5 px-2 py-1 rounded hover:bg-white/10 uppercase font-bold text-white">Hard Reset</button>
+                <h1 class="text-2xl font-black italic">CLIENT_MATRIX</h1>
+                <div class="flex items-center gap-3 mt-2">
+                    <span id="nodeLight" class="status-light bg-red-600"></span>
+                    <span id="nodeText" class="text-[10px] font-bold uppercase tracking-widest text-red-500">Node: Disconnected</span>
+                    <button id="manualConnect" class="bg-amber-500/10 border border-amber-500/40 px-3 py-1 rounded text-[8px] font-bold text-white uppercase hover:bg-amber-500 hover:text-black">Manual Override</button>
                 </div>
             </div>
-            <button onclick="window.location.href='terminal.html'" class="text-[10px] border border-amber-500/30 px-6 py-2 hover:bg-amber-500 hover:text-black transition-all font-bold uppercase">Back to Terminal</button>
+            <button onclick="window.location.href='terminal.html'" class="text-[10px] border border-amber-500/30 px-6 py-2 hover:bg-amber-500 font-bold uppercase">Back</button>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Provisioning Form -->
-            <div class="matrix-border p-8 rounded-2xl">
-                <h2 class="text-xs font-bold uppercase tracking-widest mb-6 border-b border-amber-500/10 pb-2 text-white italic">Identity Provisioning</h2>
-                <form id="provisionForm" class="space-y-5">
-                    <div>
-                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Full Name</label>
-                        <input type="text" id="newName" class="input-matrix" placeholder="e.g. Vance Archer" required>
-                    </div>
-                    <div>
-                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Balance (USD)</label>
-                        <input type="number" id="newBalance" class="input-matrix" placeholder="2500000" required>
-                    </div>
-                    <div>
-                        <label class="text-[8px] uppercase opacity-40 mb-2 block tracking-widest">Vault Passkey</label>
-                        <input type="text" id="newPass" class="input-matrix" placeholder="Secret Key" required>
-                    </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-amber-500 text-black font-black py-4 rounded-lg text-[10px] uppercase tracking-[0.2em] mt-4 hover:bg-white transition-all shadow-[0_0_20px_rgba(251,191,36,0.2)]">
-                        Execute Provisioning
+            <div class="matrix-border p-6 rounded-xl">
+                <h2 class="text-xs font-bold uppercase tracking-widest mb-6 text-white italic">Create Account</h2>
+                <form id="pForm" class="space-y-4">
+                    <input type="text" id="pName" class="input-field" placeholder="Client Name" required>
+                    <input type="number" id="pBal" class="input-field" placeholder="Initial Balance" required>
+                    <input type="text" id="pPass" class="input-field" placeholder="Client Password" required>
+                    <button type="submit" id="pBtn" class="w-full bg-amber-500 text-black font-black py-4 rounded text-[10px] uppercase tracking-widest shadow-[0_0_15px_rgba(251,191,36,0.3)]">
+                        Provision Identity
                     </button>
                 </form>
             </div>
 
-            <!-- Client Registry -->
-            <div class="lg:col-span-2 matrix-border p-8 rounded-2xl flex flex-col min-h-[450px]">
-                <div class="flex justify-between items-center mb-6 border-b border-amber-500/10 pb-2">
-                    <h2 class="text-xs font-bold uppercase tracking-widest text-white italic">Sovereign Registry</h2>
-                    <span id="syncIndicator" class="text-[8px] opacity-30 italic">Not Syncing</span>
-                </div>
-                
-                <div class="overflow-x-auto flex-grow">
-                    <table class="w-full text-left text-[11px]">
-                        <thead>
-                            <tr class="opacity-30 uppercase tracking-widest border-b border-white/5">
-                                <th class="pb-4">Identity</th>
-                                <th class="pb-4">Passkey</th>
-                                <th class="pb-4">Balance</th>
-                                <th class="pb-4 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userList" class="divide-y divide-white/5">
-                            <!-- JS Injection -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Debug Console -->
-        <div class="mt-8 p-4 bg-black/50 border border-white/5 rounded-lg font-mono text-[9px] text-slate-500">
-            <div class="flex justify-between mb-2">
-                <p class="text-amber-500 uppercase font-bold text-[8px]">System Output Log:</p>
-                <p id="logTime" class="text-[8px]"></p>
-            </div>
-            <div id="debugLog" class="max-h-24 overflow-y-auto space-y-1">
-                <p class="text-white/40">> Initializing Sovereign Core...</p>
+            <!-- Table -->
+            <div class="lg:col-span-2 matrix-border p-6 rounded-xl min-h-[400px]">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="opacity-40 uppercase border-b border-white/5">
+                        <tr><th class="pb-4">Name</th><th class="pb-4">Password</th><th class="pb-4">Balance</th><th class="pb-4 text-right">Action</th></tr>
+                    </thead>
+                    <tbody id="pList" class="divide-y divide-white/5"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -92,107 +57,65 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        function log(msg, color = 'slate-500') {
-            const div = document.getElementById('debugLog');
-            const p = document.createElement('p');
-            p.className = `text-${color}`;
-            p.innerText = `[${new Date().toLocaleTimeString()}] > ${msg}`;
-            div.appendChild(p);
-            div.scrollTop = div.scrollHeight;
-        }
-
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
-        const app = initializeApp(firebaseConfig);
+        const config = JSON.parse(__firebase_config);
+        const app = initializeApp(config);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
 
-        // Immediate Force Auth
-        async function forceConnect() {
-            log("Forcing Auth Sequence...", "white");
+        async function connect() {
             try {
-                const cred = await signInAnonymously(auth);
-                log(`Auth Locked: ${cred.user.uid}`, "green-500");
-                
-                document.getElementById('statusDot').className = "status-dot bg-green-500 shadow-[0_0_10px_#22c55e]";
-                document.getElementById('statusText').innerText = "NODE ONLINE";
-                document.getElementById('statusText').className = "text-[9px] uppercase tracking-[0.3em] text-green-500 font-bold";
-                
-                startRegistrySync();
-            } catch (err) {
-                log(`Auth Failure: ${err.message}`, "red-500");
+                const res = await signInAnonymously(auth);
+                document.getElementById('nodeLight').className = "status-light bg-green-500 shadow-[0_0_10px_#22c55e]";
+                document.getElementById('nodeText').innerText = "Node: Connected (" + res.user.uid.substring(0,6) + ")";
+                document.getElementById('nodeText').className = "text-[10px] font-bold uppercase tracking-widest text-green-500";
+                sync();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('nodeText').innerText = "Retry Required";
             }
         }
 
-        function startRegistrySync() {
-            log("Establishing Registry Uplink...", "white");
-            const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-            
-            onSnapshot(usersRef, (snapshot) => {
-                const list = document.getElementById('userList');
+        function sync() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
+                const list = document.getElementById('pList');
                 list.innerHTML = '';
-                document.getElementById('syncIndicator').innerText = "LIVE SYNC ACTIVE";
-                document.getElementById('syncIndicator').className = "text-[8px] text-green-500 font-bold italic";
-
-                if(snapshot.empty) log("Registry is empty. Waiting for first provision.", "amber-500");
-
-                snapshot.forEach((userDoc) => {
-                    const data = userDoc.data();
+                snap.forEach((d) => {
+                    const u = d.data();
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-white/5 transition-all";
                     tr.innerHTML = `
-                        <td class="py-4 font-bold text-white uppercase">${data.name}</td>
-                        <td class="py-4 opacity-50">${data.password}</td>
-                        <td class="py-4 text-amber-500 font-bold">$${Number(data.balance).toLocaleString()}</td>
-                        <td class="py-4 text-right">
-                            <button onclick="terminateUser('${userDoc.id}')" class="text-red-500 hover:text-white uppercase font-bold text-[8px] border border-red-500/20 px-2 py-1 rounded hover:bg-red-500 transition-all">Terminate</button>
-                        </td>
+                        <td class="py-4 font-bold text-white uppercase">${u.name}</td>
+                        <td class="py-4 opacity-50">${u.password}</td>
+                        <td class="py-4 text-amber-500 font-bold">$${Number(u.balance).toLocaleString()}</td>
+                        <td class="py-4 text-right"><button onclick="del('${d.id}')" class="text-red-500 text-[9px] font-black">DEL</button></td>
                     `;
                     list.appendChild(tr);
                 });
-                log(`Registry Synced. Records: ${snapshot.size}`, "green-500");
-            }, (err) => {
-                log(`Sync Error: ${err.message}`, "red-500");
             });
         }
 
-        document.getElementById('provisionForm').onsubmit = async (e) => {
+        document.getElementById('pForm').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = "PROVISIONING...";
-
+            const btn = document.getElementById('pBtn');
+            btn.disabled = true; btn.innerText = "EXECUTING...";
             try {
-                const userData = {
-                    name: document.getElementById('newName').value,
-                    balance: document.getElementById('newBalance').value,
-                    password: document.getElementById('newPass').value,
-                    createdAt: new Date().toISOString()
-                };
-
-                log(`Initiating Provisioning for: ${userData.name}`, "white");
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), userData);
-                log("Provisioning Sequence Successful.", "green-500");
-                document.getElementById('provisionForm').reset();
-            } catch (err) {
-                log(`Critical Provisioning Failure: ${err.message}`, "red-500");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "EXECUTE PROVISIONING";
-            }
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'users'), {
+                    name: document.getElementById('pName').value,
+                    balance: document.getElementById('pBal').value,
+                    password: document.getElementById('pPass').value
+                });
+                document.getElementById('pForm').reset();
+            } catch(err) { alert("Provisioning failed. Is the node light green?"); }
+            btn.disabled = false; btn.innerText = "Provision Identity";
         };
 
-        window.terminateUser = async (id) => {
-            if(confirm("Confirm Identity Termination?")) {
-                log(`Deleting record: ${id}`, "amber-500");
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
-            }
-        };
-
-        // Start connection
-        forceConnect();
+        window.del = (id) => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
+        document.getElementById('manualConnect').onclick = connect;
+        
+        // Auto-run on load
+        connect();
     </script>
 </body>
 </html>
