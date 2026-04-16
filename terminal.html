@@ -3,101 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdinCore | Admin Terminal</title>
+    <title>OdinCore | Sovereign Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #020617; 
-            color: white; 
-            margin: 0;
-            min-height: 100vh;
-        }
-        .sidebar {
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .stat-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 2rem;
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            border-color: rgba(251, 191, 36, 0.3);
-            background: rgba(30, 41, 59, 0.5);
-        }
+        body { font-family: 'JetBrains Mono', monospace; background-color: #000; color: #fbbf24; margin: 0; overflow: hidden; }
+        .terminal-grid { background-image: radial-gradient(rgba(251, 191, 36, 0.05) 1px, transparent 1px); background-size: 30px 30px; }
+        .scanline { width: 100%; height: 100px; z-index: 10; background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(251,191,36,0.02) 50%, rgba(0,0,0,0) 100%); opacity: 0.1; position: absolute; pointer-events: none; animation: scan 8s linear infinite; }
+        @keyframes scan { from { top: -100px; } to { top: 100%; } }
+        .crt-flicker { animation: flicker 0.15s infinite; }
+        @keyframes flicker { 0% { opacity: 0.97; } 50% { opacity: 1; } 100% { opacity: 0.98; } }
+        .glass-panel { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); backdrop-filter: blur(5px); }
     </style>
 </head>
-<body class="flex flex-col lg:flex-row">
+<body class="terminal-grid min-h-screen flex flex-col p-4 md:p-8 crt-flicker">
+    <div class="scanline"></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar w-full lg:w-72 flex-shrink-0 flex flex-col p-6 lg:h-screen sticky top-0 z-40">
-        <div class="flex items-center gap-3 mb-12">
-            <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center font-black text-slate-900 text-xl italic">O</div>
-            <div>
-                <h2 class="text-lg font-black italic tracking-tighter uppercase leading-none">ODINCORE</h2>
-                <p class="text-[8px] text-amber-500/70 font-bold uppercase tracking-[0.2em] mt-1">Admin Node</p>
-            </div>
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-amber-500/30 pb-6 relative z-20">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tighter uppercase italic">ODIN<span class="text-white">CORE</span> SYSTEM TERMINAL</h1>
+            <p class="text-[10px] opacity-60 uppercase tracking-[0.3em]">Authorized Access Only • Sovereign Protocol v4.0.1</p>
         </div>
-
-        <nav class="space-y-2 flex-grow">
-            <a href="terminal.html" class="flex items-center gap-4 px-4 py-3 bg-amber-500/10 text-amber-500 rounded-xl font-bold text-xs uppercase tracking-widest border border-amber-500/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                Dashboard
-            </a>
-            <!-- LINK FIXED TO management.html -->
-            <a href="management.html" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                Accounts
-            </a>
-            <!-- LINK FIXED TO wire-transfer.html -->
-            <a href="wire-transfer.html" class="flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-                Wire Desk
-            </a>
-        </nav>
-
-        <div class="mt-auto pt-6 border-t border-white/5">
-            <a href="index.html" class="w-full flex items-center gap-4 px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                Exit Session
-            </a>
+        <div class="flex gap-4">
+            <a href="management.html" class="px-4 py-2 border border-amber-500/50 hover:bg-amber-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest">Client Matrix</a>
+            <a href="index.html" class="px-4 py-2 border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest">Disconnect</a>
         </div>
-    </aside>
+    </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow p-6 md:p-10">
-        <header class="mb-10">
-            <h1 class="text-3xl font-extrabold tracking-tighter uppercase italic">Command <span class="text-amber-500">Center</span></h1>
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Institutional Management Terminal v4.0</p>
-        </header>
+    <!-- Main Live Monitor -->
+    <main class="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-20 overflow-hidden">
+        
+        <!-- Live Transfer Feed -->
+        <section class="lg:col-span-2 flex flex-col glass-panel p-6 rounded-lg overflow-hidden">
+            <h2 class="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                Inbound Wire Intercepts
+            </h2>
+            <div id="transferFeed" class="flex-grow overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                <p class="text-[10px] opacity-40 italic">Waiting for incoming transmission...</p>
+            </div>
+        </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="stat-card p-8">
-                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total Managed Capital</p>
-                <h3 class="text-3xl font-black italic">$1.24B</h3>
+        <!-- System Status -->
+        <section class="space-y-6">
+            <div class="glass-panel p-6 rounded-lg">
+                <h2 class="text-xs font-bold uppercase tracking-widest mb-4">Node Integrity</h2>
+                <div class="space-y-3 text-[10px]">
+                    <div class="flex justify-between"><span>CPU LOAD:</span><span class="text-white">12.4%</span></div>
+                    <div class="flex justify-between"><span>NETWORK:</span><span class="text-green-500">OPTIMAL</span></div>
+                    <div class="flex justify-between"><span>ENCRYPTION:</span><span class="text-white">AES-256-GCM</span></div>
+                    <div class="w-full bg-amber-500/10 h-1 mt-4">
+                        <div class="bg-amber-500 h-full w-[85%]"></div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card p-8">
-                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Active Nodes</p>
-                <h3 class="text-3xl font-black italic">14,202</h3>
-            </div>
-            <div class="stat-card p-8">
-                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Risk Status</p>
-                <h3 class="text-3xl font-black italic text-green-500">SECURE</h3>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <button onclick="window.location.href='management.html'" class="p-10 rounded-[2.5rem] bg-amber-500 text-slate-900 font-black text-sm uppercase tracking-widest hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/10">
-                Manage Account Matrix
-            </button>
-            <button onclick="window.location.href='wire-transfer.html'" class="p-10 rounded-[2.5rem] border border-white/10 hover:border-amber-500/50 text-white font-black text-sm uppercase tracking-widest transition-all bg-white/5">
-                Audit Wire Ledger
-            </button>
-        </div>
+            <div class="glass-panel p-6 rounded-lg flex-grow">
+                <h2 class="text-xs font-bold uppercase tracking-widest mb-4">System Log</h2>
+                <div id="sysLog" class="text-[9px] opacity-60 space-y-2 leading-tight">
+                    <p>> AUTHENTICATION SUCCESSFUL</p>
+                    <p>> SOVEREIGN NODE ESTABLISHED</p>
+                    <p>> MONITORING PORT 8080...</p>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Auth first (Rule 3)
+        const init = async () => {
+            await signInAnonymously(auth);
+            
+            // Listen for transfers
+            const q = collection(db, 'artifacts', appId, 'public', 'data', 'transfers');
+            onSnapshot(q, (snapshot) => {
+                const feed = document.getElementById('transferFeed');
+                feed.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    feed.innerHTML = '<p class="text-[10px] opacity-40 italic">No transactions detected in current session.</p>';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const card = document.createElement('div');
+                    card.className = "p-4 border border-amber-500/20 bg-amber-500/5 rounded hover:bg-amber-500/10 transition-all";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold text-white uppercase">${data.recipient}</span>
+                            <span class="text-[10px] text-amber-500">$${Number(data.amount).toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[8px] opacity-50 font-bold mono uppercase">${data.iban}</span>
+                            <span class="text-[8px] px-2 py-0.5 bg-amber-500/20 rounded uppercase">${data.status || 'PENDING'}</span>
+                        </div>
+                    `;
+                    feed.prepend(card);
+                    
+                    // Add to log
+                    const log = document.getElementById('sysLog');
+                    const entry = document.createElement('p');
+                    entry.innerText = `> NEW WIRE DETECTED: $${data.amount} -> ${data.recipient}`;
+                    log.prepend(entry);
+                });
+            }, (error) => {
+                console.error("Firestore Error:", error);
+            });
+        };
+
+        init();
+    </script>
 </body>
 </html>
