@@ -3,128 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OdinCore | Sovereign Terminal</title>
+    <title>OdinCore | System Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'JetBrains Mono', monospace; background-color: #000; color: #fbbf24; margin: 0; overflow: hidden; }
-        .terminal-grid { background-image: radial-gradient(rgba(251, 191, 36, 0.05) 1px, transparent 1px); background-size: 30px 30px; }
-        .scanline { width: 100%; height: 100px; z-index: 10; background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(251,191,36,0.02) 50%, rgba(0,0,0,0) 100%); opacity: 0.1; position: absolute; pointer-events: none; animation: scan 8s linear infinite; }
-        @keyframes scan { from { top: -100px; } to { top: 100%; } }
-        .crt-flicker { animation: flicker 0.15s infinite; }
-        @keyframes flicker { 0% { opacity: 0.97; } 50% { opacity: 1; } 100% { opacity: 0.98; } }
-        .glass-panel { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); backdrop-filter: blur(5px); }
+        body { font-family: 'JetBrains Mono', monospace; background-color: #0a0a0a; color: #fbbf24; margin: 0; height: 100vh; overflow: hidden; }
+        .term-container { display: grid; grid-template-columns: 1fr 350px; grid-template-rows: auto 1fr; height: 100vh; }
+        .border-glow { border: 1px solid rgba(251, 191, 36, 0.2); box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.05); }
+        .scroll-custom::-webkit-scrollbar { width: 4px; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.3); }
+        .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 100; pointer-events: none; opacity: 0.1; }
     </style>
 </head>
-<body class="terminal-grid min-h-screen flex flex-col p-4 md:p-8 crt-flicker">
+<body>
     <div class="scanline"></div>
 
-    <!-- Header -->
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-amber-500/30 pb-6 relative z-20">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tighter uppercase italic">ODIN<span class="text-white">CORE</span> SYSTEM TERMINAL</h1>
-            <p class="text-[10px] opacity-60 uppercase tracking-[0.3em]">Authorized Access Only • Sovereign Protocol v4.0.1</p>
-        </div>
-        <div class="flex gap-4">
-            <a href="management.html" class="px-4 py-2 border border-amber-500/50 hover:bg-amber-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest">Client Matrix</a>
-            <a href="index.html" class="px-4 py-2 border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest">Disconnect</a>
-        </div>
-    </header>
-
-    <!-- Main Live Monitor -->
-    <main class="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-20 overflow-hidden">
-        
-        <!-- Live Transfer Feed -->
-        <section class="lg:col-span-2 flex flex-col glass-panel p-6 rounded-lg overflow-hidden">
-            <h2 class="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                Inbound Wire Intercepts
-            </h2>
-            <div id="transferFeed" class="flex-grow overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-                <p class="text-[10px] opacity-40 italic">Waiting for incoming transmission...</p>
+    <div class="term-container p-4 gap-4">
+        <!-- Header -->
+        <header class="col-span-2 border-glow p-4 flex justify-between items-center rounded-lg bg-black">
+            <div>
+                <h1 class="text-lg font-bold tracking-tighter uppercase italic">ODINCORE <span class="text-white">SYSTEM TERMINAL</span></h1>
+                <p class="text-[8px] opacity-50 uppercase tracking-[0.4em]">Sovereign Node Protocol v4.0.1 • Status: Online</p>
             </div>
-        </section>
+            <div class="flex gap-4">
+                <button onclick="window.location.href='management.html'" class="px-4 py-2 bg-amber-500/10 border border-amber-500/30 text-[9px] font-bold uppercase hover:bg-amber-500 hover:text-black transition-all">Client Matrix</button>
+                <button onclick="window.location.href='index.html'" class="px-4 py-2 border border-red-500/30 text-red-500 text-[9px] font-bold uppercase hover:bg-red-500 hover:text-white transition-all">Disconnect</button>
+            </div>
+        </header>
 
-        <!-- System Status -->
-        <section class="space-y-6">
-            <div class="glass-panel p-6 rounded-lg">
-                <h2 class="text-xs font-bold uppercase tracking-widest mb-4">Node Integrity</h2>
-                <div class="space-y-3 text-[10px]">
-                    <div class="flex justify-between"><span>CPU LOAD:</span><span class="text-white">12.4%</span></div>
-                    <div class="flex justify-between"><span>NETWORK:</span><span class="text-green-500">OPTIMAL</span></div>
-                    <div class="flex justify-between"><span>ENCRYPTION:</span><span class="text-white">AES-256-GCM</span></div>
-                    <div class="w-full bg-amber-500/10 h-1 mt-4">
-                        <div class="bg-amber-500 h-full w-[85%]"></div>
+        <!-- Main Feed: Wire Intercepts & Support -->
+        <main class="border-glow rounded-lg bg-black/50 overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-amber-500/10 flex justify-between bg-black">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Inbound Support Tickets</span>
+                <span class="text-[10px] animate-pulse">● LIVE_FEED</span>
+            </div>
+            <div id="supportFeed" class="flex-grow overflow-y-auto p-4 space-y-4 scroll-custom">
+                <p class="text-[10px] opacity-30 italic">Initializing secure comms channel...</p>
+            </div>
+        </main>
+
+        <!-- Side Panel: System Stats -->
+        <aside class="space-y-4 flex flex-col">
+            <div class="border-glow p-6 rounded-lg bg-black flex-grow">
+                <h3 class="text-[10px] font-bold uppercase tracking-widest mb-6 border-b border-amber-500/10 pb-2">Node Integrity</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between text-[9px] mb-2"><span>CPU_LOAD</span><span>12.4%</span></div>
+                        <div class="h-1 bg-amber-500/10 w-full rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-500 w-[12.4%]"></div>
+                        </div>
                     </div>
+                    <div class="flex justify-between text-[9px]"><span>NETWORK</span><span class="text-green-500">OPTIMAL</span></div>
+                    <div class="flex justify-between text-[9px]"><span>ENCRYPTION</span><span class="text-white">AES-256-GCM</span></div>
                 </div>
-            </div>
 
-            <div class="glass-panel p-6 rounded-lg flex-grow">
-                <h2 class="text-xs font-bold uppercase tracking-widest mb-4">System Log</h2>
-                <div id="sysLog" class="text-[9px] opacity-60 space-y-2 leading-tight">
+                <h3 class="text-[10px] font-bold uppercase tracking-widest mt-12 mb-6 border-b border-amber-500/10 pb-2">System Log</h3>
+                <div id="systemLog" class="text-[8px] space-y-2 opacity-60">
                     <p>> AUTHENTICATION SUCCESSFUL</p>
                     <p>> SOVEREIGN NODE ESTABLISHED</p>
                     <p>> MONITORING PORT 8080...</p>
                 </div>
             </div>
-        </section>
-    </main>
+        </aside>
+    </div>
 
-    <!-- Firebase Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = JSON.parse(__firebase_config);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'odin-core-vault';
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        // Auth first (Rule 3)
-        const init = async () => {
-            await signInAnonymously(auth);
+        // Listen for Support Tickets
+        const supportRef = collection(db, 'artifacts', appId, 'public', 'data', 'support_tickets');
+        
+        onSnapshot(supportRef, (snapshot) => {
+            const feed = document.getElementById('supportFeed');
+            feed.innerHTML = '';
             
-            // Listen for transfers
-            const q = collection(db, 'artifacts', appId, 'public', 'data', 'transfers');
-            onSnapshot(q, (snapshot) => {
-                const feed = document.getElementById('transferFeed');
-                feed.innerHTML = '';
-                
-                if (snapshot.empty) {
-                    feed.innerHTML = '<p class="text-[10px] opacity-40 italic">No transactions detected in current session.</p>';
-                    return;
-                }
+            if(snapshot.empty) {
+                feed.innerHTML = '<p class="text-[10px] opacity-30 italic">No active support requests found.</p>';
+            }
 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const card = document.createElement('div');
-                    card.className = "p-4 border border-amber-500/20 bg-amber-500/5 rounded hover:bg-amber-500/10 transition-all";
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] font-bold text-white uppercase">${data.recipient}</span>
-                            <span class="text-[10px] text-amber-500">$${Number(data.amount).toLocaleString()}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-[8px] opacity-50 font-bold mono uppercase">${data.iban}</span>
-                            <span class="text-[8px] px-2 py-0.5 bg-amber-500/20 rounded uppercase">${data.status || 'PENDING'}</span>
-                        </div>
-                    `;
-                    feed.prepend(card);
-                    
-                    // Add to log
-                    const log = document.getElementById('sysLog');
-                    const entry = document.createElement('p');
-                    entry.innerText = `> NEW WIRE DETECTED: $${data.amount} -> ${data.recipient}`;
-                    log.prepend(entry);
-                });
-            }, (error) => {
-                console.error("Firestore Error:", error);
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const card = document.createElement('div');
+                card.className = "p-4 border border-white/5 bg-white/5 rounded-lg";
+                card.innerHTML = `
+                    <div class="flex justify-between mb-2">
+                        <span class="text-white text-[10px] font-bold uppercase">${data.userName}</span>
+                        <span class="text-[8px] opacity-40">${data.timestamp?.toDate().toLocaleTimeString() || 'NEW'}</span>
+                    </div>
+                    <p class="text-xs text-amber-500/80 leading-relaxed">${data.message}</p>
+                    <div class="mt-4 flex gap-2">
+                        <button class="text-[8px] uppercase font-bold text-green-500 hover:underline">Mark Resolved</button>
+                        <button class="text-[8px] uppercase font-bold text-slate-500 hover:underline">Shadow User</button>
+                    </div>
+                `;
+                feed.prepend(card);
             });
-        };
 
-        init();
+            // Log entry
+            const log = document.getElementById('systemLog');
+            const entry = document.createElement('p');
+            entry.innerText = `> SUPPORT_FEED_UPDATED: ${new Date().toLocaleTimeString()}`;
+            log.prepend(entry);
+        });
     </script>
 </body>
 </html>
