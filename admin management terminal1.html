@@ -5,51 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OdinCore | Admin Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #020617; 
-            color: white; 
-            margin: 0; 
-            min-height: 100vh;
-        }
-        .sidebar { 
-            background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(20px); 
-            border-right: 1px solid rgba(255, 255, 255, 0.05); 
-        }
-        .stat-card { 
-            background: rgba(15, 23, 42, 0.6); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 2.5rem;
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            border-color: #fbbf24;
-            transform: translateY(-5px);
-        }
-        .nav-link {
-            transition: all 0.2s ease;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(251, 191, 36, 0.1);
-            color: #fbbf24;
-            border-right: 3px solid #fbbf24;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: white; margin: 0; }
+        .sidebar { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 2rem; }
+        .nav-link { transition: all 0.2s ease; }
+        .nav-link:hover, .nav-link.active { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-right: 3px solid #fbbf24; }
     </style>
 </head>
-<body class="flex flex-col lg:flex-row">
+<body class="flex flex-col lg:flex-row min-h-screen">
 
     <!-- Sidebar Navigation -->
     <aside class="sidebar w-full lg:w-80 flex-shrink-0 flex flex-col p-8 lg:h-screen sticky top-0 z-40">
         <div class="mb-12">
-            <h2 class="text-2xl font-black italic tracking-tighter uppercase">ODIN<span class="text-amber-500">CORE</span></h2>
+            <h2 class="text-2xl font-black italic tracking-tighter uppercase text-white">ODIN<span class="text-amber-500">CORE</span></h2>
             <p class="text-[9px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1">Admin Authority</p>
         </div>
 
         <nav class="space-y-2 flex-grow">
-            <a href="admin management terminal.html" class="nav-link active flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-xs uppercase tracking-widest">
+            <a href="admin%20management%20terminal.html" class="nav-link active flex items-center gap-4 px-6 py-4 rounded-xl font-bold text-xs uppercase tracking-widest">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                 Dashboard
             </a>
@@ -64,82 +39,43 @@
         </nav>
 
         <div class="mt-auto pt-8 border-t border-white/5">
-            <a href="admin login.html" class="flex items-center gap-3 text-red-500 font-bold text-[10px] uppercase tracking-widest hover:text-red-400 transition-colors">
+            <a href="index.html" class="flex items-center gap-3 text-red-500 font-bold text-[10px] uppercase tracking-widest hover:text-red-400 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                Terminate Authority
+                Exit Terminal
             </a>
         </div>
     </aside>
 
-    <!-- Main Dashboard Content -->
-    <main class="flex-grow p-8 lg:p-16 overflow-y-auto">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
-            <div>
-                <h1 class="text-4xl font-black italic tracking-tighter uppercase leading-none">Command <span class="text-amber-500">Center</span></h1>
-                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-2">Status: <span class="text-green-500">All Nodes Operational</span></p>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-900/80 p-4 rounded-2xl border border-white/5">
-                <div class="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20">
-                    <span class="text-amber-500 font-black italic text-xl">A</span>
-                </div>
-                <div>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Master Admin</p>
-                    <p class="text-xs font-black text-white uppercase">ADMIN-ODIN</p>
-                </div>
-            </div>
+    <!-- Main Content -->
+    <main class="flex-grow p-8 lg:p-16">
+        <header class="mb-12">
+            <h1 class="text-5xl font-black italic tracking-tighter uppercase leading-none">Command <span class="text-amber-500">Center</span></h1>
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-4">System Status: <span class="text-green-500">All Modules Operational</span></p>
         </header>
 
-        <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div class="stat-card p-10">
-                <div class="flex justify-between items-start mb-6">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Total Vault Assets</p>
-                    <div class="text-green-500 text-[10px] font-bold">+2.4%</div>
-                </div>
-                <h3 class="text-4xl font-black text-amber-500 tracking-tighter">$1,240,000,000.00</h3>
-                <p class="text-[9px] text-slate-600 font-bold mt-4 uppercase tracking-widest">Real-time valuation</p>
+            <div class="glass-card p-8">
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total Managed Liquidity</p>
+                <p class="text-3xl font-black italic tracking-tighter">$1.24B</p>
             </div>
-
-            <div class="stat-card p-10">
-                <div class="flex justify-between items-start mb-6">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Active Clients</p>
-                </div>
-                <h3 class="text-4xl font-black text-white tracking-tighter">1,842</h3>
-                <p class="text-[9px] text-slate-600 font-bold mt-4 uppercase tracking-widest">Verified Accounts</p>
+            <div class="glass-card p-8">
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Active Accounts</p>
+                <p class="text-3xl font-black italic tracking-tighter">14,202</p>
             </div>
-
-            <div class="stat-card p-10">
-                <div class="flex justify-between items-start mb-6">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Pending Wires</p>
-                    <div class="w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
-                </div>
-                <h3 class="text-4xl font-black text-white tracking-tighter">14</h3>
-                <p class="text-[9px] text-slate-600 font-bold mt-4 uppercase tracking-widest">Awaiting Approval</p>
+            <div class="glass-card p-8">
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Pending Verifications</p>
+                <p class="text-3xl font-black italic tracking-tighter text-amber-500">42</p>
             </div>
         </div>
 
-        <!-- Activity Log -->
-        <div class="stat-card p-10 bg-slate-900/40">
-            <div class="flex justify-between items-center mb-8">
-                <h4 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">System Intelligence Ledger</h4>
-                <span class="px-3 py-1 bg-amber-500/10 text-amber-500 rounded text-[9px] font-bold uppercase tracking-widest border border-amber-500/20">Live Sync</span>
-            </div>
-            <div class="space-y-6 font-mono text-[11px] text-slate-500">
-                <div class="flex gap-4 items-start">
-                    <span class="text-amber-500/50">[03:52:01]</span>
-                    <p><span class="text-white font-bold">AUTH:</span> Admin session initialized from terminal <span class="text-amber-500">MASTER-01</span>. Encryption handshake complete.</p>
-                </div>
-                <div class="flex gap-4 items-start">
-                    <span class="text-amber-500/50">[03:51:45]</span>
-                    <p><span class="text-white font-bold">SYST:</span> Global ledger integrity check: <span class="text-green-500">100% VALID</span>. All blocks confirmed.</p>
-                </div>
-                <div class="flex gap-4 items-start">
-                    <span class="text-amber-500/50">[03:50:12]</span>
-                    <p><span class="text-white font-bold">WARN:</span> High-value transfer ($5.2M) detected in Node-Europe. Awaiting manual override.</p>
-                </div>
+        <div class="glass-card p-8">
+            <h3 class="text-sm font-black uppercase tracking-widest mb-6 border-b border-white/5 pb-4 text-slate-400">System Logs</h3>
+            <div class="space-y-4 font-mono text-[11px] text-slate-500">
+                <p><span class="text-green-500">[OK]</span> Security protocol v4.2 synchronized.</p>
+                <p><span class="text-amber-500">[INFO]</span> New enrollment application from IP: 192.168.1.104</p>
+                <p><span class="text-green-500">[OK]</span> Global ledger backup completed successfully.</p>
             </div>
         </div>
     </main>
-
 </body>
 </html>
